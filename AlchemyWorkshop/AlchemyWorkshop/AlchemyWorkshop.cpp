@@ -1,6 +1,7 @@
 ﻿#include <iostream>
 #include <vector>
 #include <string>
+#include <algorithm> 
 
 using namespace std;
 
@@ -22,13 +23,15 @@ private:
 
 public:
     // addRecipe 메서드: 재료 목록(vector)을 매개변수로 받도록 수정
-    void addRecipe(const string& name, const vector<string>& ingredients) {
+    void addRecipe(const string& name, const vector<string>& ingredients) 
+    {
         recipes.push_back(PotionRecipe(name, ingredients));
         cout << ">> 새로운 레시피 '" << name << "'이(가) 추가되었습니다." << endl;
     }
 
     // 모든 레시피 출력 메서드
-    void displayAllRecipes() const {
+    void displayAllRecipes() const 
+    {
         if (recipes.empty()) {
             cout << "아직 등록된 레시피가 없습니다." << endl;
             return;
@@ -51,6 +54,17 @@ public:
         }
         cout << "---------------------------\n";
     }
+
+    vector<PotionRecipe> searchRecipeByIngredient(const string& ingredient) 
+    {
+        vector<PotionRecipe> foundRecipes;
+        for (const auto& recipe : recipes) 
+        { 
+            if (find(recipe.ingredients.begin(), recipe.ingredients.end(), ingredient) != recipe.ingredients.end()) 
+                foundRecipes.push_back(recipe); 
+        }
+        return foundRecipes;
+    }
 };
 
 int main() {
@@ -60,23 +74,27 @@ int main() {
         cout << "⚗️ 연금술 공방 관리 시스템" << endl;
         cout << "1. 레시피 추가" << endl;
         cout << "2. 모든 레시피 출력" << endl;
-        cout << "3. 종료" << endl;
+        cout << "3. 재료로 레시피 검색" << endl; 
+        cout << "4. 종료" << endl;
         cout << "선택: ";
 
         int choice;
         cin >> choice;
 
-        if (cin.fail()) {
+        if (cin.fail()) 
+        {
             cout << "잘못된 입력입니다. 숫자를 입력해주세요." << endl;
             cin.clear();
             cin.ignore(10000, '\n');
             continue;
         }
 
-        if (choice == 1) {
+        cin.ignore(10000, '\n');
+
+        if (choice == 1) 
+        {
             string name;
             cout << "물약 이름: ";
-            cin.ignore(10000, '\n');
             getline(cin, name);
 
             // 여러 재료를 입력받기 위한 로직
@@ -84,38 +102,50 @@ int main() {
             string ingredient;
             cout << "필요한 재료들을 입력하세요. (입력 완료 시 '끝' 입력)" << endl;
 
-            while (true) {
+            while (true) 
+            {
                 cout << "재료 입력: ";
                 getline(cin, ingredient);
 
                 // 사용자가 '끝'을 입력하면 재료 입력 종료
-                if (ingredient == "끝") {
+                if (ingredient == "끝") 
                     break;
-                }
                 ingredients_input.push_back(ingredient);
             }
 
             // 입력받은 재료가 하나 이상 있을 때만 레시피 추가
-            if (!ingredients_input.empty()) {
+            if (!ingredients_input.empty()) 
                 myWorkshop.addRecipe(name, ingredients_input);
-            }
-            else {
+            else 
                 cout << ">> 재료가 입력되지 않아 레시피 추가를 취소합니다." << endl;
-            }
 
         }
-        else if (choice == 2) {
+        else if (choice == 2) 
             myWorkshop.displayAllRecipes();
+        else if (choice == 3) 
+        {
+            string searchIngredient;
+            cout << "검색할 재료: ";
+            getline(cin, searchIngredient);
 
+            vector<PotionRecipe> foundRecipes = myWorkshop.searchRecipeByIngredient(searchIngredient);
+            if (!foundRecipes.empty()) 
+            {
+                cout << "\n--- [ '" << searchIngredient << "' 재료가 포함된 레시피 ] ---" << endl;
+                for (const auto& recipe : foundRecipes) 
+                    cout << "- 물약 이름: " << recipe.potionName << endl;
+                cout << "--------------------------------------------------\n";
+            }
+            else 
+                cout << ">> '" << searchIngredient << "'가 포함된 레시피를 찾을 수 없습니다." << endl;
         }
-        else if (choice == 3) {
+        else if (choice == 4) 
+        {
             cout << "공방 문을 닫습니다..." << endl;
             break;
-
         }
-        else {
+        else 
             cout << "잘못된 선택입니다. 다시 시도하세요." << endl;
-        }
     }
 
     return 0;
